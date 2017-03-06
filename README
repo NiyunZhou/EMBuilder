@@ -14,7 +14,7 @@
 
   Short version: Download & run.
   Long version: EMBuilder was pre-compiled as a portable Linux binary. It 
-  will work with modern Linux distros. A set of templates and references 
+  will work with modern x64 Linux distros. A set of templates and references 
   are required for EMBuilder. All default templates and references are in 
   "struc_lib" folder. The path of "struc_lib" folder should be assigned by 
   exporting it to $EMB_LIB_PATH. Otherwise, "struc_lib" folder should be in 
