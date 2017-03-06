@@ -1,2 +1,114 @@
-# EMBuilder
-EMBuilder is a program based on template matching for model building of high resolution cryoEM maps.
+
+                                  EMBuilder
+
+  What is it?
+  -----------
+
+  EMBuilder is a model building program for cryo-electron microscopy(cryoEM)
+  density maps. It is based on template matching method which is widely used
+  in Crystallography. The suitable resolution for input map is higher 
+  than 3.5 Angstrom.
+
+  Installation
+  ------------
+
+  Short version: Download & run.
+  Long version: EMBuilder was pre-compiled as a portable Linux binary. It 
+  will work with modern Linux distros. A set of templates and references 
+  are required for EMBuilder. All default templates and references are in 
+  "struc_lib" folder. The path of "struc_lib" folder should be assigned by 
+  exporting it to $EMB_LIB_PATH. Otherwise, "struc_lib" folder should be in 
+  the current folder(./) of the running command.
+
+  Usage
+  -----
+
+  EMBuilder
+  -i  or  -wrk-map-in : Input working EM map(*.mrc)
+  -o  or  -pdbout     : Output PDB
+  -t  or  -threshold  : Contour level of working EM map
+  -r  or  -wrk-resol  : Resolution of working EM map
+  -b  or  -res-build  : Number of residues to be built
+
+  optional:
+  -wrk-pdb-in (NONE)                     : Provide prior PDB file(*.pdb)
+  -ref-map-in (struc_lib/EMD-8194.map)   : Provide new reference EM map(*.mrc)
+  -ref-pdb-in (struc_lib/EMD-8194.pdb)   : Provide new reference pdb
+  -ref-resol (1.8)                       : Resolution of reference EM map
+  -sidechain ()                          : Build mainchain and 
+                                           sidechain("-seqin" is required). 
+  -seqin (seq.fasta)                     : Sequence file for sidechain 
+                                           build(*.fasta)
+  -refine-vox ()                         : Refine voxel size of EM map 
+                                           before model building
+  -refine-only ()                        : Only refine voxel size, don't 
+                                           build model("-refine-vox" is 
+                                           required)
+  -refine-out-prefix (voxel_refined.map) : Output prefix of voxel size 
+                                           refined EM map
+  -out-inter-models ()                   : Output intermediate models 
+                                           after every cycle
+
+  Examples
+  --------
+
+  1. Build main chain of a cryoEM map(EM.map, 3.2A) with threshold=0.5,
+     residues=2000 and default reference(EMD-8194):
+      $ EMBuilder -i EM.map -o model.pdb -t 0.5 -r 3.2 -b 2000
+
+  2. Build main chain and side chain of a cryoEM map(EM.map, 3.2A) with 
+     threshold=0.5, residues=2000, sequence file=sequence.fasta and 
+     default reference(EMD-8194):
+      $ EMBuilder -i EM.map -o model.pdb -t 0.5 -r 3.2 -b 2000 -sidechain 
+        -seqin sequence.fasta 
+
+  3. Refine the voxel size and build main chain and side chain of a cryoEM 
+     map(EM.map 3.2A) with threshold=0.5, residues=2000, sequence 
+     file=sequence.fasta, new reference(EMD-2984, 3.0A) and a partial 
+     model(partial.pdb): 
+      $ EMBuilder -i EM.map -o model.pdb -t 0.5 -r 3.2 -b 2000 -sidechain
+        -seqin sequence.fasta -ref-map-in EMD-2984.map 
+        -ref-pdb-in EMD-2984.pdb -ref-resol 3.0 -wrk-pdb-in partial.pdb
+        -refine-vox
+
+  4. Only refine the voxel size of a cryoEM map(EM.map, 3.2A) with 
+     threshold=0.5, residues=2000:
+      $ EMBuilder -i EM.map -t 0.5 -b 2000 -refine-vox -refine-only
+
+  Troubleshooting
+  ---------------
+
+  1. ERROR: "file" does not exist! Please check file or export 
+     $EMB_LIB_PATH or put struc_lib into current folder.
+   *) Check whether the "file" is exist.
+   *) Export the location of "struc_lib" folder to $EMB_LIB_PAT:
+       $ export EMB_LIB_PATH=/location/of/struc_lib
+   *) Or put the struc_lib into the folder where you run the program. 
+
+  2. WARNING: -ref-map-in or -ref-pdb-in is missing, both ignored.
+   *) Only the map or the pdb of reference was provided. The program needs
+      them both. Please use "-ref-map-in" and "-ref-pdb-in" at the same time.
+
+  3. WARNING: Working map is too small to simulate, llk target funciton may 
+     be inaccurate. Try using a smaller reference.
+   *) The number of valid sampling of reference map in Fourier space is less 
+      than the one of working map. Therefore, the accuracy of map simulation 
+      can't be ensured, which leads the inaccuracy of llk target function 
+      and poor model building results. The solution is using a smaller 
+      reference(smaller grid sampling than working map) as the input files. 
+
+  4. WARNING: number of helices/strands for voxel size refinement < 20.
+   *) Before voxel size refinment, the program will identify the position
+      of helices and strands in the input map. The top 20 helices and strands
+      will be used to adjust voxel size. If this WARNING appeared only once,
+      maybe the map is nearly full helices or strands. The accuracy of voxel
+      size refinement will not be affected. If this WARNING appeared twice,
+      maybe the resolution of the map is not enough to identify helices or 
+      strands. In this situation, the accuracy of voxel size refinement 
+      can't be ensured. 
+       
+  Contacts
+  --------
+
+  Any questions please contact us at https://github.com/NiyunZhou/EMBuilder
+
